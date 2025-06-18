@@ -3,10 +3,18 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "things happened. yay.")
+	content, err := os.ReadFile("index.html")
+	if err != nil {
+		http.Error(w, "It's broken. Just like my spirit.", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	w.Write(content)
 }
 
 func main() {
