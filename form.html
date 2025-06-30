@@ -1,0 +1,29 @@
+<!-- form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Input Form</title>
+    <script>
+        function populateAndSubmit(form) {
+            document.getElementById("userAgent").value = navigator.userAgent;
+            document.getElementById("langData").value = navigator.language || navigator.userLanguage;
+            form.submit();
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <form action="/submit" method="POST" onsubmit="populateAndSubmit(this); return false;">
+        <label for="name">Name:</label>
+        <input type="text" name="name" required><br><br>
+
+        <label for="message">Scribble:</label>
+        <input type="text" name="message" required><br><br>
+
+        <input type="hidden" name="userAgent" id="userAgent">
+        <input type="hidden" name="langData" id="langData">
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
