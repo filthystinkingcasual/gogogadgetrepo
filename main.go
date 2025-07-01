@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"text/template"
+
+	"github.com/spf13/viper"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -17,12 +21,32 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(content)
 }
 
+func config(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("views/config.html")
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	hostname := viper.GetString("hostname")
+	t.Execute(w, hostname)
+}
+
 func main() {
 	http.HandleFunc("/", handler)
-
-	fmt.Println("Starting server on :8080 for reasons")
-	err := http.ListenAndServe(":8080", nil)
+	http.HandleFunc("/config", config)
+	port := viper.GetString("port")
+	log.Printf("Starting sever on :%s", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		fmt.Println("Something exploded:", err)
+	}
+}
+
+func init() {
+	viper.SetConfigName("gogogadget")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	if err := viper.ReadInConfig(); err == nil {
+		log.Println(viper.ConfigFileUsed())
 	}
 }
