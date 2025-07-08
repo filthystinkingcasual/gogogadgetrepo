@@ -1,3 +1,7 @@
 port: 8081
 hostname: gogogadget.com
 datacenter: nyc1
+configThingOne: one
+thingTwo: two
+appName: gogogadget
+gitrepo: https://github.com/filthystinkingcasual/gogogadgetrepo

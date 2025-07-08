@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Config</title>
+    <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
 </head>
 <body>
-    <h1>Config</h1>
-    <h2>{{ . }}</h2>
+    <h1>Config Page</h1>
+    <h2>All Settings</h2>
+    <ul>
+        {{ range $settings, $value := . }}
+        <li>{{ $settings }}: {{ $value }}</li>
+        {{ end }}
+    </ul>
 </body>
 </html>
