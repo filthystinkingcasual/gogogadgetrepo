@@ -67,6 +67,7 @@ func main() {
 }
 
 func init() {
+	viper.SetDefault("port", "8081")
 	viper.SetConfigName("gogogadget")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
