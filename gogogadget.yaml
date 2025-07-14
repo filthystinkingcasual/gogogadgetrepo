@@ -1,3 +1,9 @@
 port: 8081
-hostname: gogogadget.com
+hostname: gogogadget.r-u-serious.com
 datacenter: nyc1
+configthefirst: Frost
+configthesecond: Mocha
+configthethird: Monk
+configthefourth: Honey
+appName: GoGoGadget
+gitrepo: https://github.com/filthystinkingcasual/gogogadgetrepo
