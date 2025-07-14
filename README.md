@@ -2,7 +2,7 @@
 
 # Local Development
 
-## Running goleaser snapshot builds
+## Running goleaser to create snapshot builds
 You can use goreleaser to build the snapshot binaries and docker images so you can run the server locally
 
 ```bash
@@ -11,7 +11,7 @@ goreleaser release --snapshot --clean
 
 > [!TIP]
 > If you're using podman with goreleaser, you'll need to create symlink to docker in your `$PATH` because the OSS version of goreleaser doesn't support podman
-> Please see
+> Please see [Using podman with goreleaser](#using-podman-with-goreleaser)
 
 Here's an example output
 ```bash
@@ -61,6 +61,14 @@ You should see the images on you local machine now via docker/podman
 docker images | grep gogo
 ghcr.io/filthystinkingcasual/gogogadgetrepo                                          0.0.0-SNAPSHOT-653e9bc-amd64  7e389feae445  2 minutes ago  283 MB
 ghcr.io/filthystinkingcasual/gogogadgetrepo                                          0.0.0-SNAPSHOT-653e9bc-arm64  28ce6b10ded3  2 minutes ago  279 MB
+```
+
+## Running docker container locally
+```bash
+docker run -d --rm --name test-gogo \
+-p 8081:8081 \
+-v ./gogogadget.yaml:/opt/gogogadget/gogogadget.yaml \
+ghcr.io/filthystinkingcasual/gogogadgetrepo:0.0.0-SNAPSHOT-653e9bc-arm64
 ```
 
 ## Using podman with goreleaser
