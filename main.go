@@ -3,74 +3,44 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
-	"net/url"
-
 	"strings"
-	"text/template"
-
-	"github.com/spf13/viper"
 )
 
-func config(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("views/config.html")
-	if err != nil {
-		http.Error(w, "lol no", http.StatusInternalServerError)
-		return
+func getClientIP(r *http.Request) (string, error) {
+	forwarded := r.Header.Get("X-Forwarded-For")
+	if forwarded != "" {
+		ips := strings.Split(forwarded, ",")
+		ip := strings.TrimSpace(ips[0])
+		return ip, nil
+
 	}
-	settings := viper.AllSettings()
-	t.Execute(w, settings)
+	realip := r.Header.Get("X-Real-IP")
+	if realip != "" {
+		return realip, nil
+	}
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse remote address: %v", err)
+	}
+	return ip, nil
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("views/home.html")
+func handler(w http.ResponseWriter, r *http.Request) {
+	ip, err := getClientIP(r)
 	if err != nil {
-		http.Error(w, "that didn't work out so well for you did it", http.StatusInternalServerError)
+		log.Printf("Error getting IP: %v\n", err)
+		http.Error(w, "Could not determine client IP", http.StatusInternalServerError)
 		return
 	}
-	repoUrl := viper.GetString("gitrepo")
-	u, _ := url.Parse(repoUrl)
-	repoName := strings.TrimLeft(u.Path, "/")
-	data := struct {
-		AppName string
-		GitRepo string
-		GitURL  string
-		Item1   string
-		Item2   string
-		Item3   string
-		Item4   string
-	}{
-		AppName: viper.GetString("appName"),
-		GitURL:  viper.GetString("gitrepo"),
-		GitRepo: repoName,
-		Item1:   viper.GetString("configthefirst"),
-		Item2:   viper.GetString("configthesecond"),
-		Item3:   viper.GetString("configthethird"),
-		Item4:   viper.GetString("configthefourth"),
-	}
-	err = t.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	fmt.Fprintf(w, "Hello, your IP is %s", ip)
 }
 
 func main() {
-	http.HandleFunc("/", home)
-	http.HandleFunc("/config", config)
-	port := viper.GetString("port")
-	log.Printf("Starting sever on :%s", port)
-	err := http.ListenAndServe(":"+port, nil)
-	if err != nil {
-		fmt.Println("Something exploded:", err)
-	}
-}
-
-func init() {
-	viper.SetConfigName("gogogadget")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	if err := viper.ReadInConfig(); err == nil {
-		log.Println(viper.ConfigFileUsed())
+	http.HandleFunc("/", handler)
+	fmt.Println("Server starting on :8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
 	}
 }
