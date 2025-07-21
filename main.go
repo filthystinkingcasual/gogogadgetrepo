@@ -1,12 +1,25 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"strings"
 )
+
+// structs
+type GeoResponse struct {
+	Status  string  `json:"status"`
+	Country string  `json:"country"`
+	Region  string  `json:"region"`
+	City    string  `json:"city"`
+	Zip     string  `json:"zip"`
+	Lat     float64 `json:"lat"`
+	Lon     float64 `json:"lon"`
+	Query   string  `json:"query"`
+}
 
 func getClientIP(r *http.Request) (string, error) {
 	forwarded := r.Header.Get("X-Forwarded-For")
@@ -27,6 +40,27 @@ func getClientIP(r *http.Request) (string, error) {
 	return ip, nil
 }
 
+func getGeoData(ip string) (*GeoResponse, error) {
+	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get geo data: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	var geoData GeoResponse
+	if err := json.NewDecoder(resp.Body).Decode(&geoData); err != nil {
+		return nil, fmt.Errorf("failed to decode geo data: %v", err)
+	}
+
+	return &geoData, nil
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	ip, err := getClientIP(r)
 	if err != nil {
@@ -34,7 +68,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Could not determine client IP", http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "Hello, your IP is %s", ip)
+	//	fmt.Fprintf(w, "Hello, your IP is %s", ip)
+
+	geo, err := getGeoData(ip)
+	if err != nil {
+		log.Printf("Geo lookup failed: %v", err)
+		http.Error(w, "Geo lookup failed", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Geo data for IP %s, %s %s \n", geo.City, geo.Region, geo.Zip)
+
 }
 
 func main() {
