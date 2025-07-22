@@ -21,6 +21,20 @@ type GeoResponse struct {
 	Query   string  `json:"query"`
 }
 
+type WeatherResponse struct {
+	Location struct {
+		Name    string `json:"name"`
+		Region  string `json:"region"`
+		Country string `json:"country"`
+	} `json:"location"`
+	Current struct {
+		TempF     float64 `json:"temp_f"`
+		Condition struct {
+			Text string `json:"text"`
+		} `json:"condition"`
+	} `json:"current"`
+}
+
 func getClientIP(r *http.Request) (string, error) {
 	forwarded := r.Header.Get("X-Forwarded-For")
 	if forwarded != "" {
@@ -61,6 +75,28 @@ func getGeoData(ip string) (*GeoResponse, error) {
 	return &geoData, nil
 }
 
+func getWeatherData(zip string) (*WeatherResponse, error) {
+	apiKey := "672846b0b8904689a94153924251607"
+	url := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s", apiKey, zip)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make weather API request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("weather API returned unexpected status code: %d", resp.StatusCode)
+	}
+
+	var weatherData WeatherResponse
+	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
+		return nil, fmt.Errorf("failed to decode weather data: %v", err)
+	}
+
+	return &weatherData, nil
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	ip, err := getClientIP(r)
 	if err != nil {
@@ -77,8 +113,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Geo data for IP %s, %s %s \n", geo.City, geo.Region, geo.Zip)
+	weather, err := getWeatherData(geo.Zip)
+	if err != nil {
+		log.Printf("Weather lookup failed: %v", err)
+		http.Error(w, "Weather lookup failed", http.StatusInternalServerError)
+		return
+	}
+	//	log.Printf("Geo data for %s: %s, %s %s \n", ip, geo.City, geo.Region, geo.Zip)
 
+	fmt.Fprintf(w, "Geo data for %s: %s, %s %s \n", ip, geo.City, geo.Region, geo.Zip)
+	fmt.Fprintf(w, "Current weather in %s: %.1f°F, %s\n",
+		weather.Location.Name,
+		weather.Current.TempF,
+		weather.Current.Condition.Text)
 }
 
 func main() {
