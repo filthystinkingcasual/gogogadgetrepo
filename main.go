@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,8 +10,13 @@ import (
 	"strings"
 	"text/template"
 
+	_ "embed"
+
 	"github.com/spf13/viper"
 )
+
+//go:embed views/*
+var content embed.FS
 
 func config(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("views/config.html")
