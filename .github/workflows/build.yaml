@@ -39,8 +39,8 @@ jobs:
       - name: test credentials
         run: | 
           aws sts get-caller-identity
-          aws ecr describe-repositories
-          
+          aws ecr-public describe-repositories
+
 
 
 #      - name: Log in to Docker Hub
