@@ -46,7 +46,7 @@ jobs:
       - name: Log in to AWS ACR Public
         uses: aws-actions/amazon-ecr-login@v2    
         with:
-          registry-type: public.acr.aws 
+          registry-type: public
 
       # --- IGNORE ---
       # - name: Log in to Docker Hub
