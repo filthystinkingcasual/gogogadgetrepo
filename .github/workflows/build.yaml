@@ -42,12 +42,19 @@ jobs:
         run: | 
           aws sts get-caller-identity
           aws ecr-public describe-repositories
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3.6.0
+
+      - name: Log in to AWS ACR Public
+        uses: aws-actions/amazon-ecr-login@v2    
         with:
-          registry: public.ecr.aws
-          username: ${{ env.AWS_ACCESS_KEY_ID }}
-          password: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          registry-type: public.acr.aws 
+
+      # --- IGNORE ---
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@v3.6.0
+      #   with:
+      #     registry: public.ecr.aws
+      #     username: ${{ env.AWS_ACCESS_KEY_ID }}
+      #     password: ${{ env.AWS_SECRET_ACCESS_KEY }}
 
       # - name: Extract metadata (tags, labels) for Docker
       #   id: meta
