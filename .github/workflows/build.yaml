@@ -74,8 +74,8 @@ jobs:
 
       - name: push Docker image
         run: |
-            docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.version }}-amd64
-            docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.version }}-arm64
+            docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.snapshot-version }}-amd64
+            docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.snapshot-version }}-arm64
       
       # - name: Generate artifact attestation
       #   uses: actions/attest-build-provenance@v3
