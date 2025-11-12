@@ -18,7 +18,8 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-1      
+  AWS_REGION: us-east-1
+  DOCKER_REGISTRY: public.ecr.aws/fscasual/gogogadget      
 jobs:
   build:
     name: build and publish Docker image
@@ -71,31 +72,11 @@ jobs:
           version: v2
           args: release --clean ${{ steps.goreleaser-args.outputs.args }}
 
-
-      # --- IGNORE ---
-      # - name: Log in to Docker Hub
-      #   uses: docker/login-action@v3.6.0
-      #   with:
-      #     registry: public.ecr.aws
-      #     username: ${{ env.AWS_ACCESS_KEY_ID }}
-      #     password: ${{ env.AWS_SECRET_ACCESS_KEY }}
-
-      # - name: Extract metadata (tags, labels) for Docker
-      #   id: meta
-      #   uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-      #   with:
-      #     images: my-docker-hub-namespace/my-docker-hub-repository
-
-      # - name: Build and push Docker image
-      #   id: push
-      #   uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-
+      - name: push Docker image
+        run: |
+            docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.version }}-amd64
+            docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.version }}-arm64
+      
       # - name: Generate artifact attestation
       #   uses: actions/attest-build-provenance@v3
       #   with:
