@@ -24,7 +24,7 @@ builds:
       - arm64
     binary: gogogadget
 dockers:
-- image_templates: ["ghcr.io/filthystinkingcasual/gogogadgetrepo:{{ .Version }}-amd64"]
+- image_templates: ["ghcr.io/filthystinkingcasual/gogogadgetrepo:{{ .Tag }}-amd64"]
   dockerfile: Dockerfile
   goos: linux
   goarch: amd64
@@ -39,7 +39,7 @@ dockers:
   - --label=org.opencontainers.image.revision={{ .FullCommit }}
   extra_files:
     - views
-- image_templates: ["ghcr.io/filthystinkingcasual/gogogadgetrepo:{{ .Version }}-arm64"]
+- image_templates: ["ghcr.io/filthystinkingcasual/gogogadgetrepo:{{ .Tag }}-arm64"]
   dockerfile: Dockerfile
   goos: linux
   goarch: arm64
