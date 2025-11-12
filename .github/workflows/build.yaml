@@ -31,18 +31,26 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
+      - name: Get version
+        id: versions
+        run: |
+          version=$(<VERSION)
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "snapshot-version=${version}-$(git log --format=%h -1)" >> $GITHUB_OUTPUT
 
+      - name: Check if Tag Exists
+        id: check_tag
+        run: |
+          git ls-remote --exit-code --tags origin '${{ steps.versions.outputs.version }}' && found=true
+          if [[ "${found}" == "true" ]]; then
+            echo "::error::The ${{ steps.versions.outputs.version }} tag already exists. Please update the version and changelog."
+            exit 1
+          fi
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::070936606018:role/gha_ecr_role
-
-      - name: test credentials
-        run: | 
-          aws sts get-caller-identity
-          aws ecr-public describe-repositories
-
       - name: Log in to AWS ACR Public
         uses: aws-actions/amazon-ecr-login@v2    
         with:
