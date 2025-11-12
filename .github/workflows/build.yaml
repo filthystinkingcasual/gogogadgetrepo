@@ -60,7 +60,7 @@ jobs:
         id: goreleaser-args
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "args=--snapshot --skip-publish" >> $GITHUB_OUTPUT
+            echo "args=--snapshot" >> $GITHUB_OUTPUT
           else
             echo "args= " >> $GITHUB_OUTPUT
           fi
