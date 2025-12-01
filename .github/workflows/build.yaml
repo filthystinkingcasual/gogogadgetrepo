@@ -63,7 +63,7 @@ jobs:
           bodyFile: "CHANGELOG.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.versions.outputs.version }}    
-          draft: "${{ github.event_name == 'push' }}"
+          draft: "${{ github.event_name == 'pull_request' }}"
       - name: set up goreleaser args
         id: goreleaser-args
         run: |
