@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-
 	"strings"
 	"text/template"
 
