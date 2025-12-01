@@ -52,11 +52,18 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::070936606018:role/gha_ecr_role
-      - name: Log in to AWS ACR Public
+      - name: Log in to AWS ECR Public
         uses: aws-actions/amazon-ecr-login@v2    
         with:
           registry-type: public
-      
+    
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.versions.outputs.version }}    
+          draft: ${{ github.event_name == 'push' }}
       - name: set up goreleaser args
         id: goreleaser-args
         run: |
@@ -66,6 +73,7 @@ jobs:
           else
             echo "args= " >> $GITHUB_OUTPUT
           fi
+                
       - name: Install GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -73,6 +81,7 @@ jobs:
           args: release --clean ${{ steps.goreleaser-args.outputs.args }}
 
       - name: push Docker image
+        if: github.event_name == 'pull_request'
         run: |
             docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.snapshot-version }}-amd64
             docker push ${{ env.DOCKER_REGISTRY }}:${{ steps.versions.outputs.snapshot-version }}-arm64
