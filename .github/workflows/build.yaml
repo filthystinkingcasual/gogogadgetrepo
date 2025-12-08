@@ -58,15 +58,16 @@ jobs:
           registry-type: public
     
       - name: Create Release
+        if: github.event_name == 'push'
         uses: ncipollo/release-action@v1
         with:
           bodyFile: "CHANGELOG.md"
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.versions.outputs.version }}    
-          draft: "${{ github.event_name == 'pull_request' }}"
       - name: set up goreleaser args
         id: goreleaser-args
         run: |
+          git fetch
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git tag ${{ steps.versions.outputs.snapshot-version }}
             echo "args=--snapshot" >> $GITHUB_OUTPUT
