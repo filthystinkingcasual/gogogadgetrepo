@@ -79,6 +79,8 @@ jobs:
         with:
           version: v2
           args: release --clean ${{ steps.goreleaser-args.outputs.args }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: push Docker image
         if: github.event_name == 'pull_request'
