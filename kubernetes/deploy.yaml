@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gogog-deploy
+  name: gogog-deploy
+  namespace: gogog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogog-deploy
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: gogog-deploy
+    spec:
+      containers:
+      - image: public.ecr.aws/fscasual/gogogadget:0.0.1-arm64
+        name: gogogadget
+        resources: {}
+status: {}
