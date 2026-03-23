@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: gogog-deploy
+  name: gogog-deploy
+  namespace: gogogadget
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: gogog-deploy
+status:
+  loadBalancer: {}

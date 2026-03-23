@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gogog-deploy
+  name: gogog-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogog-deploy
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: gogog-deploy
+    spec:
+      containers:
+      - image: public.ecr.aws/fscasual/gogogadget:0.0.1-amd64
+        name: gogogadget
+        resources: {}
+        volumeMounts:
+          - name: gogogadgetconfig
+            mountPath: /opt/gogogadget/gogogadget.yaml
+            subPath: gogogadget.yaml
+      volumes:
+      - name: gogogadgetconfig
+        configMap:
+          name: gogogadgetconfig       
+status: {}

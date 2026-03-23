@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: gogogadget
+  name: gogogadget
+spec:
+  containers:
+  - image: public.ecr.aws/fscasual/gogogadget:0.0.1-arm64
+    name: gogogadget
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
