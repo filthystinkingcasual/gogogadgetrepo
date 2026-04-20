@@ -7,6 +7,8 @@
 **gogogadget
 dist/
 **alpine-k8s*
+.github/copilot-instructions.md
+
 # Test binary, built with `go test -c`
 *.test
 
