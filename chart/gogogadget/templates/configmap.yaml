@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  gogogadget.yaml: |-
+    port: {{ .Values.service.port }}
+    hostname: {{ .Values.config.hostname }}
+    datacenter: {{ .Values.config.datacenter }}
+    configthefirst: {{ .Values.config.configthefirst }}
+    configthesecond: {{ .Values.config.configthesecond }}
+    configthethird: {{ .Values.config.configthethird }}
+    configthefourth: {{ .Values.config.configthefourth }}
+    appName: {{ .Release.Name }}
+    gitrepo: {{ .Values.config.gitrepo }}
+kind: ConfigMap
+metadata:
+  name: gogogadgetconfig
