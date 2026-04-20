@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-**gogogadget
+#**gogogadget
 dist/
 **alpine-k8s*
 .github/copilot-instructions.md
