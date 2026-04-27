@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "gogogadget.fullname" . }}
+  labels:
+    {{ include "gogogadget.labels" . | nindent 4 }}
+spec:
+  tls:
+    termination: edge
+  to:
+    kind: "Service"
+    name: {{ include "gogogadget.fullname" . }}
+status: {}

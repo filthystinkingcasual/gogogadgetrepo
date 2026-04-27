@@ -3,22 +3,22 @@ kind: Deployment
 metadata:
   name: {{ include "gogogadget.fullname" . }}
   labels:
-    {{ include "gogogadget.labels" . | nindent 4 }}
+    {{- include "gogogadget.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{ include "gogogadget.selectorLabels" . | nindent 6 }}
+      {{- include "gogogadget.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    labels:
-        {{- include "gogogadget.labels" . | nindent 6 }}
+      labels:
+        {{- include "gogogadget.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 6 }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
